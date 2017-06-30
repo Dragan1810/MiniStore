@@ -23,4 +23,7 @@ router.get('/store/:slug',catchErrors(storeControler.getStoreBySlug))
 
 router.get('/stores/:id/edit',catchErrors(storeControler.editStore));
 
+router.get('/tags',catchErrors(storeControler.getStoreByTag));
+router.get('/tags/:tag',catchErrors(storeControler.getStoreByTag));
+
 module.exports = router;
