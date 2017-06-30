@@ -13,15 +13,42 @@ const storeSchema = new mongoose.Schema({
         type:String,
         trim:true
     },
-    tags:[String]
-})
+    tags:[String],
+    created: {
+        type: Date,
+        default: Date.now
+    },
+    location: {
+        type:{
+            type: String,
+            default: 'Point'
+        },
+        coordinates: [{
 
-storeSchema.pre('save',function(next){
+        type:Number,
+        required:"you must supply coordinates!"
+
+        }],
+        address: {
+        type:String,
+        required:'You must supply an address!'
+        }
+    },
+    photo: String
+});
+
+storeSchema.pre('save', async function(next){
     if (!this.isModified('name')){
         next();  // skip
         return;  // stop this function from runing
     }
     this.slug = slug(this.name);
+
+    const slugRegEx = new RegExp(`^(${this.slug})((-[0-9]*$)?)$`,'i');
+    const storesWithSlug = await this.constructor.find({slug:slugRegEx});
+    if (storesWithSlug.length) {
+        this.slug =`${this.slug}-${storesWithSlug.length+1}`;
+    }
     next();
 
     // TODO make slugs unique
